@@ -1,5 +1,5 @@
 import {Game, GameSettings, GameTestData, Setting} from "../../src/game";
-import {Condition, ConditionType, Direction, Move, Program, RepeatUntil} from "../../src/program";
+import {Condition, ConditionType, Direction, IfThenElse, Move, Program, RepeatUntil} from "../../src/program";
 import {Runtime, Termination} from "../../src/runtime";
 
 describe('Empty program', () => {
@@ -267,8 +267,59 @@ describe('Non-empty program, only moves, crashing', () => {
     });
 });
 
-describe('Non-empty program, only moves, no obstacles', () => {
-    it('Snapshot loaded with 1 food item located on bottom left corner, character located in bottom right corner, repeat left until left is food -> success', () => {
+describe('Non-empty program, moves and ifs', () => {
+    it('Snapshot loaded with 2 food items located one at the left of the character and one above the other one, move left and if up is food then move up -> success', () => {
+        /*
+               0 1 2 3 4 5 6 7 8 9
+            9 | | | | | | | | | | |
+            8 | | | | | | | | | | |
+            7 | | | | | | | | | | |
+            6 | | | | |F| | | | | |
+            5 | | | | |F|C| | | | |
+            4 | | | | | | | | | | |
+            3 | | | | | | | | | | |
+            2 | | | | | | | | | | |
+            1 | | | | | | | | | | |
+            0 | | | | | | | | | | |
+         */
+
+        const settings = givenSettings(1, 0);
+        const snapshot = GameTestData.snapshotWithCustomInitialisation({
+            character: {x: 5, y: 5},
+            foodItems: [{x: 4, y: 5}, {x: 4, y: 6}],
+            obstacles: []
+        });
+        const game = new Game(settings);
+        const program = new Program([
+            new Move(Direction.Left),
+            new IfThenElse(new Condition(Direction.Up, ConditionType.Is_Food),
+                [new Move(Direction.Up)],
+                [])
+        ]);
+        const runtime = new Runtime(game, program);
+
+        game.loadSnapshot(snapshot);
+        const termination = runtime.execute();
+
+        expect(termination).toBe(Termination.Success);
+    });
+});
+
+describe('Non-empty program, moves and repeatUntil', () => {
+    it('Snapshot loaded with 1 food item located on bottom left corner, character located in bottom right corner, repeat move left until left is food -> success', () => {
+        /*
+               0 1 2 3 4 5 6 7 8 9
+            9 | | | | | | | | | | |
+            8 | | | | | | | | | | |
+            7 | | | | | | | | | | |
+            6 | | | | | | | | | | |
+            5 | | | | | | | | | | |
+            4 | | | | | | | | | | |
+            3 | | | | | | | | | | |
+            2 | | | | | | | | | | |
+            1 | | | | | | | | | | |
+            0 |F| | | | | | | | |C|
+         */
         const settings = givenSettings(1, 0);
         const snapshot = GameTestData.snapshotWithCustomInitialisation({
             character: {x: 9, y: 0},
@@ -280,6 +331,46 @@ describe('Non-empty program, only moves, no obstacles', () => {
             new RepeatUntil(new Condition(Direction.Left, ConditionType.Is_Food),
                 [
                     new Move(Direction.Left)
+                ]),
+            new Move(Direction.Left)
+        ]);
+        const runtime = new Runtime(game, program);
+
+        game.loadSnapshot(snapshot);
+        const termination = runtime.execute();
+
+        expect(termination).toBe(Termination.Success);
+    });
+
+    it('Snapshot loaded with 1 food item located on upper left corner, character located in bottom right corner, repeat left and up until left is food -> success', () => {
+        /*
+               0 1 2 3 4 5 6 7 8 9
+            9 |F| | | | | | | | | |
+            8 | | | | | | | | | | |
+            7 | | | | | | | | | | |
+            6 | | | | | | | | | | |
+            5 | | | | | | | | | | |
+            4 | | | | | | | | | | |
+            3 | | | | | | | | | | |
+            2 | | | | | | | | | | |
+            1 | | | | | | | | | | |
+            0 | | | | | | | | | |C|
+         */
+
+        const settings = givenSettings(1, 0);
+        const snapshot = GameTestData.snapshotWithCustomInitialisation({
+            character: {x: 9, y: 0},
+            foodItems: [{x: 0, y: 9}],
+            obstacles: []
+        });
+        const game = new Game(settings);
+        const program = new Program([
+            new RepeatUntil(new Condition(Direction.Left, ConditionType.Is_Food),
+                [
+                            new IfThenElse(new Condition(Direction.Up, ConditionType.Is_Not_Boundary),
+                                [new Move(Direction.Up)],
+                                []),
+                            new Move(Direction.Left)
                 ]),
             new Move(Direction.Left)
         ]);

@@ -1,5 +1,5 @@
 import {Game, Input, Output} from "./game";
-import {Condition, ConditionType, Direction, Move, Program, RepeatUntil, Statement} from "./program";
+import {Condition, ConditionType, Direction, IfThenElse, Move, Program, RepeatUntil, Statement} from "./program";
 
 export class Runtime {
     public constructor(private readonly game: Game, private readonly program: Program) {
@@ -38,6 +38,11 @@ export class Runtime {
             return this.handleMove(move);
         }
 
+        if (statement instanceof IfThenElse) {
+            const ifThenElse = statement as IfThenElse;
+            return this.handleIfThenElse(ifThenElse);
+        }
+
         if (statement instanceof RepeatUntil) {
             const repeatUntil = statement as RepeatUntil;
             return this.handleRepeatUntil(repeatUntil);
@@ -60,6 +65,26 @@ export class Runtime {
                 return new MaybeTermination(Termination.Error);
             }
         }
+    }
+
+    private handleIfThenElse(ifThenElse: IfThenElse): MaybeTermination {
+
+        const condition = ifThenElse.condition;
+        const thenStatements = ifThenElse.thenStatements;
+        const elseStatements = ifThenElse.elseStatements;
+
+        if (this.conditionIsSatisfied(condition)) {
+            const maybeTermination = this.handleStatements(thenStatements);
+            if (maybeTermination.isPresent()) {
+                return maybeTermination;
+            }
+        }
+
+        const maybeTermination = this.handleStatements(elseStatements);
+        if (maybeTermination.isPresent()) {
+            return maybeTermination;
+        }
+        return new MaybeTermination();
     }
 
     private handleRepeatUntil(repeatUntil: RepeatUntil): MaybeTermination {
@@ -114,11 +139,11 @@ export class Runtime {
         const y = charachterPosition[1];
         switch (direction) {
             case Direction.Up: {
-                return [x, y - 1];
+                return [x, y + 1];
             }
 
             case Direction.Down: {
-                return [x, y + 1];
+                return [x, y - 1];
             }
 
             case Direction.Left: {

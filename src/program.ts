@@ -16,11 +16,11 @@ export class Move implements Statement {
 
 export class IfThenElse implements Statement {
     constructor(public readonly condition: Condition,
-                public readonly thenStatement: Statement,
-                public readonly elseStatement?: Statement) {
+                public readonly thenStatements: Statement[],
+                public readonly elseStatements: Statement[]) {
 
         checkIsAssigned(condition);
-        checkIsAssigned(thenStatement);
+        checkIsAssigned(thenStatements);
     }
 }
 
