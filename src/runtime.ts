@@ -185,7 +185,7 @@ export enum Termination {
     Error = "Error"
 }
 
-export class MaybeTermination {
+class MaybeTermination {
     constructor(readonly value?: Termination) {
     }
 
