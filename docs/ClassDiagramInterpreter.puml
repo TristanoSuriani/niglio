@@ -1,0 +1,60 @@
+@startuml
+
+
+class Program {
+  -Statement statements (0..n)
+}
+
+enum Direction {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+}
+
+interface Statement {
+}
+
+class Move {
+  -Direction direction (1..1)
+}
+
+class IFThenElse {
+  -Condition condition (1..1)
+  -Statement thenStatement (1..1)
+  -Statement elseStatement (0..1)
+}
+
+class Condition {
+  -Direction direction (1..1)
+  -ConditionType type (1..1)
+}
+
+enum ConditionType {
+  IS_FOOD,
+  IS_OBSTACLE,
+  IS_WALL,
+  IS_NOT_FOOD,
+  IS_NOT_OBSTACLE,
+  IS_NOT_WALL
+}
+
+
+class RepeatUntil {
+  -Condition condition (1..1)
+  -Statement statements (1..n)
+}
+
+Move -up.|> Statement
+Move o-down- Direction
+Condition *-down- ConditionType
+Condition o-down- Direction
+IFThenElse -up.|> Statement
+IFThenElse o--up Statement
+IFThenElse o-down- Condition
+RepeatUntil -up.|> Statement
+RepeatUntil o-down- Statement
+RepeatUntil o-down- Condition
+Program o-down- Statement
+
+@enduml

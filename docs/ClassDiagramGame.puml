@@ -1,0 +1,80 @@
+@startuml
+
+class Game {
+  -GameSettings settings (1..1)
+  -Grid grid (1..1)
+  --
+  +takeInput(input: Input) : Output
+  +loadSnapshot(snapshot: GameSnapshot)
+  +getSnapshot(): GameSnapshot
+}
+
+class GameSnapshot {
+  -String cells ([10][10]) ['E' | 'C' | 'F' | 'O']
+}
+
+enum Input {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT
+}
+
+enum Output {
+  OK,
+  FAIL,
+  ERROR
+}
+
+class GameSettings {
+  -Setting numberOfFoodItems (1..1)
+  -Setting numberOfObstacles (1..1)
+}
+
+class Setting {
+  -number value (1..1) [ >= 0 ]
+}
+
+class Grid {
+  -Food foodItems (1..10)
+  -Obstacle obstacles (0..10)
+  -Character character (1..1)
+}
+
+class Cell {
+  -Coordinates coordinates (1..1)
+}
+
+class Character {
+  -Cell cell (1..1)
+}
+
+class Coordinates {
+  -number x (1..1)
+  -number y (1..1)
+}
+
+class Food {
+  -Cell cell (1..1)
+}
+
+class Obstacle {
+  -Cell cell (1..1)
+}
+
+
+Grid o-down- Food
+Grid o-down- Character
+Grid o-down- Obstacle
+Character o-down- Cell
+Food o-down- Cell
+Obstacle o-down- Cell
+Cell o-down- Coordinates
+Game o--down- GameSettings
+Game o-down- Grid
+GameSettings *-down- Setting
+Game -down-> GameSnapshot
+Game o-down- Input
+Game o-down- Output
+
+@enduml
