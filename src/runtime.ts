@@ -47,6 +47,7 @@ export class Runtime {
             const repeatUntil = statement as RepeatUntil;
             return this.handleRepeatUntil(repeatUntil);
         }
+
         throw new Error('Unsupported statement type');
     }
 
@@ -84,6 +85,7 @@ export class Runtime {
         if (maybeTermination.isPresent()) {
             return maybeTermination;
         }
+
         return new MaybeTermination();
     }
 
@@ -98,6 +100,7 @@ export class Runtime {
                 return maybeTermination;
             }
         }
+
         return new MaybeTermination();
     }
 
@@ -155,7 +158,6 @@ export class Runtime {
             }
         }
     }
-
 
     private giveInput(direction: Direction): Output {
         switch(direction) {
