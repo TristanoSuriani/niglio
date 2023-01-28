@@ -1,10 +1,6 @@
 import {Game, GameSettings, GameTestData, Setting} from "../../src/game";
-import {Direction, Move, Program} from "../../src/program";
+import {Condition, ConditionType, Direction, Move, Program, RepeatUntil} from "../../src/program";
 import {Runtime, Termination} from "../../src/runtime";
-
-let game;
-let program;
-let runtime;
 
 describe('Empty program', () => {
     it('No food items initiated (no shapshot loaded), 0 food items in settings -> succes', () => {
@@ -268,6 +264,31 @@ describe('Non-empty program, only moves, crashing', () => {
         const termination = runtime.execute();
 
         expect(termination).toBe(Termination.Crash);
+    });
+});
+
+describe('Non-empty program, only moves, no obstacles', () => {
+    it('Snapshot loaded with 1 food item located on bottom left corner, character located in bottom right corner, repeat left until left is food -> success', () => {
+        const settings = givenSettings(1, 0);
+        const snapshot = GameTestData.snapshotWithCustomInitialisation({
+            character: {x: 9, y: 0},
+            foodItems: [{x: 0, y: 0}],
+            obstacles: []
+        });
+        const game = new Game(settings);
+        const program = new Program([
+            new RepeatUntil(new Condition(Direction.Left, ConditionType.Is_Food),
+                [
+                    new Move(Direction.Left)
+                ]),
+            new Move(Direction.Left)
+        ]);
+        const runtime = new Runtime(game, program);
+
+        game.loadSnapshot(snapshot);
+        const termination = runtime.execute();
+
+        expect(termination).toBe(Termination.Success);
     });
 });
 

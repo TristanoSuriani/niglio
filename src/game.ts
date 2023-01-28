@@ -36,7 +36,32 @@ export class Game {
     }
 
     public areThereFoodItemsLeft(): boolean {
-        return this.grid.foodItems.length != 0;
+        return this.grid.foodItems.length !== 0;
+    }
+
+    public getCharachterPosition(): number[] {
+        return [this.grid.character.cell.coordinates.x.value, this.grid.character.cell.coordinates.y.value];
+    }
+
+    public isThereAFoodItemOnPosition(x: number, y: number): boolean {
+        return this.grid.foodItems.filter(foodItem => {
+            const coordinates = foodItem.cell.coordinates;
+            return coordinates.x.value === x && coordinates.y.value === y;
+        }).length !== 0;
+    }
+
+    public isThereAnObstacleOnPosition(x: number, y: number): boolean {
+        return this.grid.obstacles.filter(obstacle => {
+            const coordinates = obstacle.cell.coordinates;
+            return coordinates.x.value === x && coordinates.y.value === y;
+        }).length !== 0;
+    }
+
+    public isThereABoundaryOnPosition(x: number, y: number): boolean {
+        return x < 0
+            || x >= numberOfRows
+            || y < 0
+            || y >= numberOfColumns;
     }
 }
 

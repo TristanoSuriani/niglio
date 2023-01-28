@@ -1,4 +1,4 @@
-import {checkArrayIsNotEmpty, checkIsAssigned} from "./shared";
+import {checkIsAssigned} from "./shared";
 
 export class Program {
     public constructor(public readonly statements: Statement[]) {
@@ -30,24 +30,23 @@ export class RepeatUntil implements Statement {
 
         checkIsAssigned(condition);
         checkIsAssigned(statements);
-        checkArrayIsNotEmpty(statements);
     }
 }
 
 export class Condition {
-    constructor(public readonly direction: Direction, public readonly conditionType: ConditionType) {
+    constructor(public readonly direction: Direction, public readonly type: ConditionType) {
         checkIsAssigned(direction);
-        checkIsAssigned(conditionType);
+        checkIsAssigned(type);
     }
 }
 
 export enum ConditionType {
     Is_Food = "Is food",
     Is_Obstacle = "Is obstacle",
-    Is_Wall = "Is wall",
+    Is_Boundary = "Is boundary",
     Is_Not_Food = "Is not food",
     Is_Not_Obstacle = "Is not obstacle",
-    Is_Not_Wall = "Is not wall"
+    Is_Not_Boundary = "Is not boundary"
 }
 
 export enum Direction {
